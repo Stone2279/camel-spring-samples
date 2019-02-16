@@ -1,0 +1,39 @@
+version: '3.5'
+
+networks:
+  stone-eai:
+    external:
+      name: stone-eai
+
+volumes:
+  postgres-spring:
+  artemis:
+
+services:
+  artemis:
+    image: vromero/activemq-artemis
+    container_name: artemis
+    networks:
+        - stone-eai
+    ports:
+      - 8161:8161
+      - 9404:9404
+      - 61616:61616
+    environment:
+      ENABLE_JMX_EXPORTER: "true"
+      ARTEMIS_USERNAME: "admin"
+      ARTEMIS_PASSWORD: "admin"
+
+  postgres:
+    image: postgres
+    container_name: postgres-spring
+    volumes:
+      - postgres-spring:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=admin
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    networks:
+      - stone-eai
